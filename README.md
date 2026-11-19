@@ -1,17 +1,31 @@
-# Mystery Marble Studio V19 — experimental shot-aware test
+# Mystery Marble Studio V20 — local offline processor (experimental)
 
-Deploy with Vercel framework **Vite** (build: `npm run build`, output: `dist`).
+## Why this version is local
+Vercel's static site deployments cannot run long CPU/GPU video-processing jobs. V20 therefore provides a **local FastAPI studio** that runs on your laptop. It is not a Vercel cloud processing backend. A future hosted system would require a separate GPU/CPU worker, storage, and job queue.
 
-## Changes from V18
-- Approximate camera-cut detection using frame brightness samples; resets stale segmentation mask at cuts.
-- Adjustable focus region and mask persistence.
-- Optional manual goal placement and ball location anchors; interpolation between ball anchors. **Not automatic ball tracking.**
-- Black-and-silver marble rendering and offline frame processing, then original-timing replay.
+## Windows 10/11 setup
+1. Install Python 3.11 or 3.12 and FFmpeg (both `python` and `ffmpeg` should work in a terminal).
+2. Extract this ZIP and open PowerShell in its folder.
+3. `py -3.11 -m venv .venv` (or `python -m venv .venv`)
+4. `.\.venv\Scripts\Activate.ps1` (or `.venv\Scripts\python.exe` for subsequent commands if execution policy blocks activation)
+5. `python -m pip install -r requirements.txt`
+6. `python -m uvicorn server:app --host 127.0.0.1 --port 8000`
+7. Open `http://127.0.0.1:8000` in a browser on the laptop.
 
-## Limitations
-This is **not** a football-specific detection model. MediaPipe selfie segmentation can miss small distant footballers, and close-up bodies may extend outside the video frame. A proper person/object detection and instance-segmentation pipeline is still needed for automatic penalty taker, goalkeeper, ball, and goal tracking. No MP4 export. iPhone memory constraints apply. Markers are baked into frames during processing, so reprocess after placing anchors. A goal drawn at a manual anchor does not yet follow camera motion.
+**First run requires internet:** Ultralytics downloads `yolo11n-seg.pt` weights. Later runs can be offline if weights are cached. Install FFmpeg for H.264 output. CPU inference can be slow. Use short 5–12 second clips at 12 fps and 640 resolution first.
 
-## Test
-1. Select a short football clip; load model; set 8 fps; process.
-2. Inspect shot boundaries and timeline; compare frame persistence with V18.
-3. Optional: set a goal anchor and two ball anchors at different timeline positions, then reprocess.
+## What works / limitations
+- Frame-by-frame processing (not real-time), preserving video duration and speed at selected output fps.
+- Segmented person masks filled with black/silver beads. Model tracking via ByteTrack.
+- General COCO sports-ball detection (may miss the small ball). Metadata includes detected ball points.
+- Optional manually placed static goal overlay; no true net physics or camera-aware goal tracking.
+- No goalkeeper role classification. No manual silhouette corrections. Camera cuts use a conservative heuristic, not validated shot classification.
+- V20 is an engineering prototype. It has NOT been validated on the user's footage or on Windows/iPhone.
+
+## CLI (optional)
+`python processor/render.py input.mp4 output.mp4 --fps 12 --size 640 --spacing 7`
+The CLI writes MP4V video. To make it Safari compatible, convert with FFmpeg:
+`ffmpeg -i output.mp4 -c:v libx264 -pix_fmt yuv420p -movflags +faststart output_h264.mp4`
+
+## Privacy
+Files remain on the computer hosting the server under `jobs/`. No automatic cleanup. Delete the `jobs` folder after use. The browser sends the uploaded video to the local server at 127.0.0.1, not to Vercel.
