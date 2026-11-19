@@ -1,31 +1,19 @@
-# Mystery Marble Studio V20 — local offline processor (experimental)
+# Mystery Marble Studio V21 — Full-frame monochrome
 
-## Why this version is local
-Vercel's static site deployments cannot run long CPU/GPU video-processing jobs. V20 therefore provides a **local FastAPI studio** that runs on your laptop. It is not a Vercel cloud processing backend. A future hosted system would require a separate GPU/CPU worker, storage, and job queue.
+No dependencies or MediaPipe. The application uses a browser video element and a canvas to transform every frame into grayscale black-and-silver glossy marbles. The original football footage, camera motion, players, ball, net and goalposts are all transformed together. It does not isolate or track individual objects.
 
-## Windows 10/11 setup
-1. Install Python 3.11 or 3.12 and FFmpeg (both `python` and `ffmpeg` should work in a terminal).
-2. Extract this ZIP and open PowerShell in its folder.
-3. `py -3.11 -m venv .venv` (or `python -m venv .venv`)
-4. `.\.venv\Scripts\Activate.ps1` (or `.venv\Scripts\python.exe` for subsequent commands if execution policy blocks activation)
-5. `python -m pip install -r requirements.txt`
-6. `python -m uvicorn server:app --host 127.0.0.1 --port 8000`
-7. Open `http://127.0.0.1:8000` in a browser on the laptop.
+## Deploy on Vercel
 
-**First run requires internet:** Ultralytics downloads `yolo11n-seg.pt` weights. Later runs can be offline if weights are cached. Install FFmpeg for H.264 output. CPU inference can be slow. Use short 5–12 second clips at 12 fps and 640 resolution first.
+1. Extract this ZIP.
+2. Upload `index.html` and `vercel.json` to the ROOT of your `Tenotemo/Marblestudio` repository, replacing the existing root `index.html`.
+3. Remove any old `package.json`, `package-lock.json`, `vite.config.*`, and `src` directory from earlier versions if they are no longer needed, or set Vercel Framework Preset to **Other** and Build Command to blank (override) with Output Directory blank (override).
+4. Commit to `main`; Vercel should deploy a static site without installing npm packages.
+5. On iPhone Safari, select a compatible video and press Play. A MOV may fail depending on its codec; try H.264 MP4 if necessary.
 
-## What works / limitations
-- Frame-by-frame processing (not real-time), preserving video duration and speed at selected output fps.
-- Segmented person masks filled with black/silver beads. Model tracking via ByteTrack.
-- General COCO sports-ball detection (may miss the small ball). Metadata includes detected ball points.
-- Optional manually placed static goal overlay; no true net physics or camera-aware goal tracking.
-- No goalkeeper role classification. No manual silhouette corrections. Camera cuts use a conservative heuristic, not validated shot classification.
-- V20 is an engineering prototype. It has NOT been validated on the user's footage or on Windows/iPhone.
+## Notes
 
-## CLI (optional)
-`python processor/render.py input.mp4 output.mp4 --fps 12 --size 640 --spacing 7`
-The CLI writes MP4V video. To make it Safari compatible, convert with FFmpeg:
-`ffmpeg -i output.mp4 -c:v libx264 -pix_fmt yuv420p -movflags +faststart output_h264.mp4`
-
-## Privacy
-Files remain on the computer hosting the server under `jobs/`. No automatic cleanup. Delete the `jobs` folder after use. The browser sends the uploaded video to the local server at 127.0.0.1, not to Vercel.
+- Full-frame effect uses no segmentation, detection, AI model, or internet connection after loading.
+- Playback follows the original video time; rendering performance varies with device. Use Performance detail on slower phones.
+- Recording works only on browsers that support canvas.captureStream and MediaRecorder WebM; not guaranteed on iPhone. It records video only (no audio).
+- 9:16 and 16:9 formats letterbox the source footage to avoid stretching. Marbles replace the whole frame including letterbox areas.
+- There is no MP4 export or server processing in this version.
