@@ -1,1 +1,1 @@
-{"name":"mystery-marble-studio-v18","version":"18.0.0","private":true,"type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","preview":"vite preview --host 0.0.0.0"},"dependencies":{"@mediapipe/tasks-vision":"0.10.21"},"devDependencies":{"vite":"^6.3.0"}}
+{"name":"mystery-marble-studio-v19","version":"19.0.0","private":true,"type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","preview":"vite preview --host 0.0.0.0"},"dependencies":{"@mediapipe/tasks-vision":"0.10.21"},"devDependencies":{"vite":"^6.3.0"}}

@@ -1,15 +1,17 @@
-# Mystery Marble Studio V18
+# Mystery Marble Studio V19 — experimental shot-aware test
 
-Upload this folder to a GitHub repository root, import it into Vercel as a Vite project, and deploy. The app uses MediaPipe ImageSegmenter 0.10.21 and loads its model and WASM assets at runtime (requires network access). Run `npm install` and `npm run build` locally to check installation and build.
+Deploy with Vercel framework **Vite** (build: `npm run build`, output: `dist`).
 
-## Workflow
-1. Choose a browser-supported football video. The original frame should appear.
-2. Load the silhouette model.
-3. Choose analysis FPS (start with 8 on iPhone), then Process frames. Processing may be slower than real time.
-4. Play processed frames; they are replayed with original video timing based on selected FPS.
+## Changes from V18
+- Approximate camera-cut detection using frame brightness samples; resets stale segmentation mask at cuts.
+- Adjustable focus region and mask persistence.
+- Optional manual goal placement and ball location anchors; interpolation between ball anchors. **Not automatic ball tracking.**
+- Black-and-silver marble rendering and offline frame processing, then original-timing replay.
 
 ## Limitations
-- The bundled selfie segmentation model detects foreground people as a group. It is not a football-specific multi-person detector, and can fail on distant players, overlapping people, and goalkeepers. Stabilization is a simple temporal mask hold, not true object tracking.
-- Goalposts and nets are a static illustrative overlay. The ball overlay is a synthetic animation, NOT tracked from the original video. Disable it for honest visualization. Precise goal geometry, goalkeeper identity, ball tracking, and net reactions require additional dedicated tracking or manual keyframing.
-- This proof-of-concept stores full processed frames in memory. Keep clips short (e.g. 5–10 seconds) especially on phones. It does not yet export MP4.
-- Video audio is not reproduced in processed replay. Output is black/silver monochrome and does not preserve jersey or skin colors.
+This is **not** a football-specific detection model. MediaPipe selfie segmentation can miss small distant footballers, and close-up bodies may extend outside the video frame. A proper person/object detection and instance-segmentation pipeline is still needed for automatic penalty taker, goalkeeper, ball, and goal tracking. No MP4 export. iPhone memory constraints apply. Markers are baked into frames during processing, so reprocess after placing anchors. A goal drawn at a manual anchor does not yet follow camera motion.
+
+## Test
+1. Select a short football clip; load model; set 8 fps; process.
+2. Inspect shot boundaries and timeline; compare frame persistence with V18.
+3. Optional: set a goal anchor and two ball anchors at different timeline positions, then reprocess.
