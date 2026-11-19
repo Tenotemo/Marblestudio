@@ -1,11 +1,15 @@
-# Mystery Marble Studio V17
+# Mystery Marble Studio V18
 
-Vercel/Vite project. Upload all files to a GitHub repository root. In Vercel, framework Vite, build `npm run build`, output `dist`. Install `npm install`.
+Upload this folder to a GitHub repository root, import it into Vercel as a Vite project, and deploy. The app uses MediaPipe ImageSegmenter 0.10.21 and loads its model and WASM assets at runtime (requires network access). Run `npm install` and `npm run build` locally to check installation and build.
 
-## Test order
-1. Select a video and verify an original frame appears in the preview.
-2. Tap Play without loading detector. Confirm moving original video and increasing Frames count.
-3. Pause, load player detector, then Play again to test marble silhouettes.
-4. If detector fails, the original preview remains usable; copy the status and diagnostics text.
+## Workflow
+1. Choose a browser-supported football video. The original frame should appear.
+2. Load the silhouette model.
+3. Choose analysis FPS (start with 8 on iPhone), then Process frames. Processing may be slower than real time.
+4. Play processed frames; they are replayed with original video timing based on selected FPS.
 
-The selfie segmentation model is not a multi-person football detector and may miss small/distant players. The model and WASM load from external CDNs and need internet. Mobile browser decoding/recording support varies.
+## Limitations
+- The bundled selfie segmentation model detects foreground people as a group. It is not a football-specific multi-person detector, and can fail on distant players, overlapping people, and goalkeepers. Stabilization is a simple temporal mask hold, not true object tracking.
+- Goalposts and nets are a static illustrative overlay. The ball overlay is a synthetic animation, NOT tracked from the original video. Disable it for honest visualization. Precise goal geometry, goalkeeper identity, ball tracking, and net reactions require additional dedicated tracking or manual keyframing.
+- This proof-of-concept stores full processed frames in memory. Keep clips short (e.g. 5–10 seconds) especially on phones. It does not yet export MP4.
+- Video audio is not reproduced in processed replay. Output is black/silver monochrome and does not preserve jersey or skin colors.
