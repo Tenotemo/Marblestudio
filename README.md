@@ -1,13 +1,11 @@
-# Mystery Marble Studio V16 — Vercel deployment
+# Mystery Marble Studio V17
 
-This is a Vite app using MediaPipe Tasks Vision for browser-side person segmentation. It attempts to fill detected human silhouettes with glossy marble dots and draws a generic football pitch. It does not provide guaranteed detection of small or overlapping football players, and it is not a 3D character reconstruction.
+Vercel/Vite project. Upload all files to a GitHub repository root. In Vercel, framework Vite, build `npm run build`, output `dist`. Install `npm install`.
 
-## Deploy
-1. Unzip and upload the folder to a GitHub repository.
-2. In Vercel select **Add New → Project → Import Git Repository**.
-3. Framework: **Vite**; Build command: `npm run build`; Output directory: `dist`.
-4. Deploy, open the HTTPS URL on your iPhone, upload a video, and tap **Load player detector**.
+## Test order
+1. Select a video and verify an original frame appears in the preview.
+2. Tap Play without loading detector. Confirm moving original video and increasing Frames count.
+3. Pause, load player detector, then Play again to test marble silhouettes.
+4. If detector fails, the original preview remains usable; copy the status and diagnostics text.
 
-The MediaPipe JavaScript is bundled at build time, avoiding dynamic JavaScript module imports from a CDN. MediaPipe WASM and the segmentation model are still downloaded over HTTPS when the detector starts; these external resources must be reachable. If detection fails, check the Safari console or network restrictions. No video is uploaded to a server by this app; processing happens in the browser.
-
-For local development: `npm install`, then `npm run dev`.
+The selfie segmentation model is not a multi-person football detector and may miss small/distant players. The model and WASM load from external CDNs and need internet. Mobile browser decoding/recording support varies.
