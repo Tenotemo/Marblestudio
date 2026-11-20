@@ -1,27 +1,20 @@
-# Mystery Marble Studio V22
+# Mystery Marble Studio V24 — Clean static build
 
-Two browser-based modes:
+This is a self-contained HTML application. There is NO app.js, no vercel.json, no npm install, and no Vite build.
 
-1. **Football video → PNG frames**: grayscale full-frame marble conversion, including all original scene objects, with original timing preserved by sequential sampling at a chosen FPS.
-2. **Guess the picture**: gradual marble reveals for country flags, stylized logo text placeholders, famous people (upload your own photo), and custom images.
+## Reliable deployment
 
-## Deploy
+**Recommended:** create a NEW EMPTY GitHub repository (for example Marblestudio-V24) and upload only index.html from this ZIP. Connect that new repository to a NEW Vercel project. Framework: Other; Root Directory: ./; Build Command: none; Output Directory: .
 
-Upload `index.html`, `app.js`, and `vercel.json` to the root of your GitHub repository. Deploy to Vercel using the **Other** framework preset; no npm installation or build command is needed. A simple static site is sufficient.
+Alternatively, remove legacy src/, web/, processor/, package.json and old deployment configuration from the old repository first. Do not just add V24 files to the old repository without checking deployment settings.
 
-## CapCut
+Test /index.html and the page buttons. There is intentionally no /app.js URL in V24.
 
-Extract the exported ZIP, import numbered frames in ascending order, and set each image duration to 1/FPS seconds (12 FPS = 0.083333 seconds). CapCut versions differ in whether bulk duration changes are supported. If that is difficult, on a laptop run FFmpeg in the extracted folder:
+## Functions
 
-`ffmpeg -framerate 12 -i frame_%05d.png -c:v libx264 -pix_fmt yuv420p output.mp4`
+- Video: upload local MP4/MOV supported by the browser; preview full-frame black/silver marble conversion; export PNG frames in ZIP. iOS memory and video codec restrictions apply.
+- Guess studio: 78 country flag presets loaded from flagcdn.com (requires internet); 52 brand-name placeholder cards; 57 people name presets (requires uploaded photo); custom image upload. Reveal animation and ZIP export.
+- Exports are limited to 400 frames to reduce browser crashes. For CapCut import PNGs in order and set duration 1/FPS.
+- All video frames preserve original aspect ratio and timestamps sampled at chosen FPS, but output frame rate is chosen by user.
 
-For 24 FPS, change `12` to `24`. Frame extraction uses the selected sampling rate; 12 FPS will look less smooth than the original 60 FPS clip, even though total playback duration matches.
-
-## Limits
-
-- Browser PNG export is memory-intensive. Begin with a 5–10 second video, 480 px and 8–12 FPS, especially on iPhone.
-- Some MOV codecs cannot be decoded in all browsers. Convert to H.264 MP4 if needed.
-- Flag presets load from flagcdn.com and require an internet connection and CORS support. Upload an image if loading fails.
-- Brand logo presets are *stylized text placeholders*, not official brand artwork. Famous people presets supply names only; upload a photo to reveal.
-- The original historical image library and exact V11 styling are not included because those assets were not provided with this project.
-- This is an image sequence exporter, not an automatic CapCut integration or an MP4 encoder.
+This version is not guaranteed to support all iPhone MOV codecs, and it has not been browser-tested on an iPhone.
